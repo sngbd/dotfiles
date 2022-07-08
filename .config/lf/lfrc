@@ -1,0 +1,6 @@
+map D delete
+map g top
+map <enter> shell
+
+set icons
+set scrolloff 10
