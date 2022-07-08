@@ -38,6 +38,7 @@ alias v="CC=/opt/homebrew/bin/gcc-11 nvim"
 alias python="python3"
 alias ls="exa --icons"
 alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
+alias lg="lazygit"
 
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
