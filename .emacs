@@ -1,8 +1,5 @@
 (setq inhibit-startup-screen t)
 
-(toggle-frame-maximized)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
@@ -11,6 +8,8 @@
 (ido-mode 1)
 (global-display-line-numbers-mode 1)
 
+(setq scroll-margin 5)
+(setq-default truncate-lines 0)
 (setq display-line-numbers-type 'relative)
 
 (set-frame-font "Cascadia Code-16")
@@ -45,7 +44,7 @@
    '("1704976a1797342a1b4ea7a75bdbb3be1569f4619134341bd5a4c1cfb16abad4" default))
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(org-modern evil-collection magit doom-themes vterm auto-save-buffers-enhanced smex undo-tree evil)))
+   '(evil-paredit paredit org-modern evil-collection magit doom-themes vterm auto-save-buffers-enhanced smex undo-tree evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
