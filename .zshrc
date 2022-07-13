@@ -18,13 +18,10 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
-# bindkey -v
 set -o vi
 
-#Default Path
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/local/bin
 
-# Yank to the system clipboard
 function vi-yank-xclip {
     zle vi-yank
    echo "$CUTBUFFER" | pbcopy -i
@@ -33,7 +30,6 @@ function vi-yank-xclip {
 zle -N vi-yank-xclip
 bindkey -M vicmd 'y' vi-yank-xclip
 
-# Aliases
 alias v="CC=/opt/homebrew/bin/gcc-11 nvim"
 alias python="python3"
 alias ls="exa --icons"
@@ -42,6 +38,4 @@ alias lg="lazygit"
 
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
