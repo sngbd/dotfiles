@@ -1,0 +1,6 @@
+basictex
+font-hack-nerd-font
+gifcapture
+iterm2
+keycastr
+rar
