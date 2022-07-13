@@ -6,7 +6,7 @@
 (column-number-mode 1)
 (show-paren-mode 1)
 (ido-mode 1)
-(global-display-line-numbers-mode 1)
+(display-line-numbers-mode 1)
 
 (setq scroll-margin 5)
 (setq-default truncate-lines 0)
@@ -31,7 +31,8 @@
     undo-tree-enable-undo-in-region nil)
 
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 (custom-set-variables
@@ -72,7 +73,16 @@
 (define-key global-map "\C-ca" 'org-agenda)
 (setq org-log-done t)
 
-(setq org-agenda-files (list "~/Org/work.org"
-                             "~/Org/study.org" 
-                             "~/Org/home.org"))
+(use-package magit
+  :ensure t
+  :config
+  (setq magit-push-always-verify nil)
+  (setq git-commit-summary-max-length 50)
+  :bind
+  ("M-g" . magit-status))
 
+(fset 'yes-or-no-p 'y-or-n-p)
+
+
+(load-file (let ((coding-system-for-read 'utf-8))
+                (shell-command-to-string "agda-mode locate")))
