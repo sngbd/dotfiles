@@ -12,7 +12,7 @@
 (setq-default truncate-lines 0)
 (setq display-line-numbers-type 'relative)
 
-(set-frame-font "Cascadia Code-16")
+(set-face-attribute 'default nil :font "Cascadia Code-16")
 
 (load (expand-file-name "~/Quicklisp/slime-helper.el"))
 ;; Replace "sbcl" with the path to your implementation
@@ -45,7 +45,7 @@
    '("1704976a1797342a1b4ea7a75bdbb3be1569f4619134341bd5a4c1cfb16abad4" default))
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(evil-paredit paredit org-modern evil-collection magit doom-themes vterm auto-save-buffers-enhanced smex undo-tree evil)))
+   '(geiser-mit multi-term evil-paredit paredit org-modern evil-collection magit doom-themes vterm auto-save-buffers-enhanced smex undo-tree evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -83,6 +83,8 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
-
 (load-file (let ((coding-system-for-read 'utf-8))
-                (shell-command-to-string "agda-mode locate")))
+               (shell-command-to-string "agda-mode locate")))
+
+(setq geiser-mit-binary "/usr/local/bin/scheme")
+(setq geiser-active-implementations '(mit))
