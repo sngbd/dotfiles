@@ -8,11 +8,16 @@
 (ido-mode 1)
 (display-line-numbers-mode 1)
 
+(fset 'yes-or-no-p 'y-or-n-p)
+
 (setq scroll-margin 5)
 (setq-default truncate-lines 0)
-(setq display-line-numbers-type 'relative)
 
-(set-face-attribute 'default nil :font "Cascadia Code-16")
+(set-face-attribute 'default nil :font "Cascadia Code-15")
+
+(set-fontset-font "fontset-default"
+                  'unicode
+                  '("Hack Nerd Font"))
 
 (load (expand-file-name "~/Quicklisp/slime-helper.el"))
 ;; Replace "sbcl" with the path to your implementation
@@ -35,23 +40,27 @@
 	     '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+(require 'smex)
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+
+(load-theme 'nord t)
+
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-enabled-themes '(doom-nord))
- '(custom-safe-themes
-   '("1704976a1797342a1b4ea7a75bdbb3be1569f4619134341bd5a4c1cfb16abad4" default))
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(geiser-mit multi-term evil-paredit paredit org-modern evil-collection magit doom-themes vterm auto-save-buffers-enhanced smex undo-tree evil)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+   '(nord-theme
+     geiser-mit
+     evil-paredit
+     paredit
+     evil-collection
+     magit
+     vterm
+     auto-save-buffers-enhanced
+     smex
+     undo-tree
+     evil)))
 
 (setq auto-save-default nil)
 (setq create-lockfiles nil)
@@ -80,8 +89,6 @@
   (setq git-commit-summary-max-length 50)
   :bind
   ("M-g" . magit-status))
-
-(fset 'yes-or-no-p 'y-or-n-p)
 
 (load-file (let ((coding-system-for-read 'utf-8))
                (shell-command-to-string "agda-mode locate")))
