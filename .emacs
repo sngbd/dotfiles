@@ -20,7 +20,6 @@
                   '("Hack Nerd Font"))
 
 (load (expand-file-name "~/Quicklisp/slime-helper.el"))
-;; Replace "sbcl" with the path to your implementation
 (setq inferior-lisp-program "sbcl")
 
 (setq evil-want-keybinding nil)
@@ -48,19 +47,13 @@
 (load-theme 'nord t)
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(nord-theme
-     geiser-mit
-     evil-paredit
-     paredit
-     evil-collection
-     magit
-     vterm
-     auto-save-buffers-enhanced
-     smex
-     undo-tree
-     evil)))
+   '(quickrun lsp-java auctex nord-theme geiser-mit evil-paredit paredit evil-collection magit vterm auto-save-buffers-enhanced smex undo-tree evil)))
 
 (setq auto-save-default nil)
 (setq create-lockfiles nil)
@@ -95,3 +88,12 @@
 
 (setq geiser-mit-binary "/usr/local/bin/scheme")
 (setq geiser-active-implementations '(mit))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+(setq TeX-indent-open-delimiters "[")
+(setq TeX-indent-close-delimiters "]")
