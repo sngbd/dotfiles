@@ -25,10 +25,10 @@ set lazyredraw
 set ignorecase
 set nowrap
 set cursorline
-set tabstop=8 
+set tabstop=4 
 set softtabstop=0 
 set expandtab 
-set shiftwidth=4 
+set shiftwidth=2 
 set smarttab
 set termguicolors
 
