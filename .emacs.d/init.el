@@ -1,53 +1,57 @@
 (setq gc-cons-threshold (* 50 1000 1000))
 
-;; Profile emacs startup
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
                      (emacs-init-time "%.2f")
                      gcs-done)))
 
-;; Defaults
-(setq ring-bell-function 'ignore)
-
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-(setq inhibit-startup-screen t)
+(defun open-init-file ()
+  (interactive)
+  (find-file user-init-file))
+
+(setq
+ inhibit-startup-screen t
+ use-short-answers t
+ confirm-kill-processes nil
+ delete-by-moving-to-trash t
+ completions-detailed t
+ ring-bell-function 'ignore
+ )
 
 (tooltip-mode 0)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
-(show-paren-mode 1)
 
 (column-number-mode)
+(setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode t)
 
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-(setq indent-line-function 'insert-tab)
-
-(fset 'yes-or-no-p 'y-or-n-p)
+;; (setq-default indent-tabs-mode nil)
+;; (setq-default tab-width 2)
+;; (setq indent-line-function 'insert-tab)
 
 (setq scroll-margin 5)
 (setq-default truncate-lines 0)
 
-;; Fonts
-(set-face-attribute 'default nil :font "Iosevka" :height 180)
+(set-face-attribute 'default nil :font "Iosevka" :height 160)
 
 (set-fontset-font "fontset-default"
                   'unicode
                   '("Hack Nerd Font"))
 
 (require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/") t)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                          ("org" . "https://orgmode.org/elpa/")
+                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents
  (package-refresh-contents))
 
-;; Initialize use-package on non-Linux platforms
 (unless (package-installed-p 'use-package)
    (package-install 'use-package))
 
@@ -57,7 +61,8 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 eshell-mode-hook
-                vterm-mode-hook))
+                vterm-mode-hook
+                treemacs-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (load (expand-file-name "~/Quicklisp/slime-helper.el"))
@@ -75,13 +80,6 @@
 (setq slime-compile-file-options '(:fasl-directory "/tmp/slime-fasls/"))
 (make-directory "/tmp/slime-fasls/" t)
 
-(require 'org)
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-(setq org-log-done t)
-
-(setq custom-file (concat user-emacs-directory "/custom.el"))
-
 (load-file (let ((coding-system-for-read 'utf-8))
                (shell-command-to-string "agda-mode locate")))
 
@@ -91,12 +89,12 @@
 (setq TeX-indent-open-delimiters "[")
 (setq TeX-indent-close-delimiters "]")
 
-;; use-package
 (use-package doom-themes
   :init (load-theme 'doom-palenight t))
 
 (use-package magit
   :ensure t
+  :commands (magit-status magit-get-current-branch)
   :config
   (setq magit-push-always-verify nil)
   (setq git-commit-summary-max-length 50)
@@ -136,7 +134,7 @@
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 10)))
+  :custom ((doom-modeline-height 5)))
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -145,7 +143,7 @@
   :init (which-key-mode)
   :diminish which-key-mode
   :config
-  (setq which-key-idle-delay 0))
+  (setq which-key-idle-delay 3))
 
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
@@ -204,7 +202,6 @@
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-  ;; Use visual line motions even outside of visual-line-mode buffers
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
@@ -222,3 +219,116 @@
 (setq undo-tree-auto-save-history nil
     undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))
     undo-tree-enable-undo-in-region nil)
+
+(use-package hydra)
+
+(defhydra hydra-text-scale (:timeout 4)
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
+(rune/leader-keys
+  "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Programming/Git")
+    (setq projectile-project-search-path '("~/Programming/Git")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :after projectile
+  :config
+  (counsel-projectile-mode 1))
+
+(defun dw/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setq evil-auto-indent nil))
+
+(use-package org
+  :hook (org-mode . dw/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"
+        org-hide-emphasis-markers t))
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(dolist (face '((org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.1)
+                (org-level-7 . 1.1)
+                (org-level-8 . 1.1))))
+
+(require 'org-indent)
+
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(setq custom-file (concat user-emacs-directory "/custom.el"))
+
+(defun efs/lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode)
+             
+  :hook (lsp-mode . efs/lsp-mode-setup))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (lsp-enable-which-key-integration t))
+
+(use-package lsp-ivy)
+
+(use-package typescript-mode
+  :mode "\\.js\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+         ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+         ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+(use-package lsp-treemacs
+  :after lsp)
+
+(use-package lsp-ivy)
