@@ -9,8 +9,7 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (defun open-init-file ()
-  (interactive)
-  (find-file user-init-file))
+  (interactive) (find-file user-init-file))
 
 (setq
  inhibit-startup-screen t
@@ -19,6 +18,7 @@
  delete-by-moving-to-trash t
  completions-detailed t
  ring-bell-function 'ignore
+ mode-require-final-newline nil
  )
 
 (tooltip-mode 0)
@@ -30,14 +30,10 @@
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode t)
 
-;; (setq-default indent-tabs-mode nil)
-;; (setq-default tab-width 2)
-;; (setq indent-line-function 'insert-tab)
-
 (setq scroll-margin 5)
 (setq-default truncate-lines 0)
 
-(set-face-attribute 'default nil :font "Iosevka" :height 160)
+(set-face-attribute 'default nil :font "Cascadia Code" :height 150)
 
 (set-fontset-font "fontset-default"
                   'unicode
@@ -53,7 +49,7 @@
  (package-refresh-contents))
 
 (unless (package-installed-p 'use-package)
-   (package-install 'use-package))
+  (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
@@ -90,7 +86,7 @@
 (setq TeX-indent-close-delimiters "]")
 
 (use-package doom-themes
-  :init (load-theme 'doom-palenight t))
+    :init (load-theme 'doom-nord t))
 
 (use-package magit
   :ensure t
@@ -258,36 +254,6 @@
   (setq org-ellipsis " ▾"
         org-hide-emphasis-markers t))
 
-(use-package org-bullets
-  :after org
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-(font-lock-add-keywords 'org-mode
-                        '(("^ *\\([-]\\) "
-                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-(dolist (face '((org-level-1 . 1.2)
-                (org-level-2 . 1.1)
-                (org-level-3 . 1.05)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.1)
-                (org-level-6 . 1.1)
-                (org-level-7 . 1.1)
-                (org-level-8 . 1.1))))
-
-(require 'org-indent)
-
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-(setq custom-file (concat user-emacs-directory "/custom.el"))
-
 (defun efs/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode)
@@ -299,12 +265,15 @@
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
-  (lsp-enable-which-key-integration t))
+  (lsp-enable-which-key-integration t)
+  :hook (web-mode . lsp)
+  :custom
+  (lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file" "/dev/stderr")))
 
 (use-package lsp-ivy)
 
 (use-package typescript-mode
-  :mode "\\.js\\'"
+  :mode "\\.ts\\'"
   :hook (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
@@ -332,3 +301,11 @@
   :after lsp)
 
 (use-package lsp-ivy)
+
+(use-package smartparens
+  :ensure t
+  :init
+  (smartparens-global-mode))
+
+(use-package json-mode
+  :ensure t)
